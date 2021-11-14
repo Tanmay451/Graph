@@ -24,6 +24,27 @@ public class Graph {
         return bfs;
     }
 
+    static void dfsHelper(int node, ArrayList<ArrayList<Integer>> adj, boolean vis[], ArrayList<Integer> dfs){
+        dfs.add(node);
+        vis[node] = true;
+        for (Integer it: adj.get(node)){
+            if (!vis[it]){
+                dfsHelper(it, adj, vis, dfs);
+            }
+        }
+    }
+
+    static ArrayList<Integer>dfs(int V, ArrayList<ArrayList<Integer>> adj){
+        ArrayList<Integer> dfs = new ArrayList<>();
+        boolean vis[] = new boolean[V+1];
+        for (int i = 1; i<V;i++){
+            if (!vis[i]){
+                dfsHelper(i,adj,vis,dfs);
+            }
+        }
+        return dfs;
+    }
+
     static void addEdge(ArrayList<ArrayList<Integer> > adj,int u, int v){
         adj.get(u).add(v);
         adj.get(v).add(u);
@@ -37,7 +58,6 @@ public class Graph {
         addEdge(adj,2,3);
         addEdge(adj,2,7);
         addEdge(adj,3,2);
-        addEdge(adj,3,7);
         addEdge(adj,3,5);
         addEdge(adj,4,6);
         addEdge(adj,5,3);
@@ -48,5 +68,8 @@ public class Graph {
         
         ArrayList<Integer> bfs = bfs(7,adj);
         System.out.println("bfs for given graph is :\t"+bfs);
+
+        ArrayList<Integer> dfs = dfs(7,adj);
+        System.out.println("dfs for given graph is :\t"+dfs);
     }    
 }
