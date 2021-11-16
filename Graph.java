@@ -225,6 +225,69 @@ public class Graph {
         }
         return topologicalSort;
     }
+
+    static ArrayList<Integer> topologicalSortKahn(int V, ArrayList<ArrayList<Integer>> adj){
+        ArrayList<Integer> result = new ArrayList<>();
+        int degree[] = new int[V+1];
+        for (int i = 1;i<=V;i++){
+            for (Integer it: adj.get(i)){
+                degree[it]++;
+            }
+        }
+
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 1; i<V+1; i++){
+            if (degree[i] == 0){
+                q.add(i);
+            }
+        }
+
+        while(!q.isEmpty()){
+            Integer temp = q.poll();
+            result.add(temp);
+            for (Integer it : adj.get(temp)){
+                degree[it]--;
+                if (degree[it] == 0){
+                    q.add(it);
+                }
+            }
+        }
+        return result; 
+    }
+
+    static boolean isCycleKahn(int V, ArrayList<ArrayList<Integer>> adj){
+        ArrayList<Integer> result = new ArrayList<>();
+        int degree[] = new int[V+1];
+        for (int i = 1;i<=V;i++){
+            for (Integer it: adj.get(i)){
+                degree[it]++;
+            }
+        }
+
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 1; i<V+1; i++){
+            if (degree[i] == 0){
+                q.add(i);
+            }
+        }
+        int c = 0;
+        while(!q.isEmpty()){
+            Integer temp = q.poll();
+            result.add(temp);
+            for (Integer it : adj.get(temp)){
+                degree[it]--;
+                if (degree[it] == 0){
+                    q.add(it);
+                }
+            }
+            c++;
+        }
+
+        if (c == V){
+            return false;
+        }
+        return true;
+    }
     public static void main(String[] args) {
         ArrayList<ArrayList<Integer>> adj = new ArrayList<ArrayList<Integer>>();
         for (int i = 0;i<=7;i++)adj.add(new ArrayList<Integer>());
@@ -238,24 +301,24 @@ public class Graph {
         // addEdge(adj,3,7);
 
 
-        System.out.println(adj);
+        // System.out.println(adj);
         ArrayList<Integer> bfs = bfs(7,adj);
-        System.out.println("bfs for given graph is :\t"+bfs);
+        System.out.println("BFS for given graph is :\t"+bfs);
 
         ArrayList<Integer> dfs = dfs(7,adj);
-        System.out.println("dfs for given graph is :\t"+dfs);
+        System.out.println("DFS for given graph is :\t"+dfs);
 
         boolean isCycle = isCycle(7, adj);
-        System.out.println("Circle in given graph :\t"+isCycle);
+        System.out.println("Detecting circle in given graph :\t"+isCycle);
 
         boolean isCycleDFS = isCycleDFS(7, adj);
-        System.out.println("Circle using DFS in given graph :\t"+isCycleDFS);
+        System.out.println("Detecting circle using DFS in given graph :\t"+isCycleDFS);
 
         boolean isBipartite = isBipartite(7, adj);
-        System.out.println("isBipartite using BFS in given graph :\t"+isBipartite);
+        System.out.println("Detecting bipartite using BFS in given graph :\t"+isBipartite);
 
         boolean isBipartiteDFS = isBipartiteDFS(7, adj);
-        System.out.println("isBipartiteDFS using BFS in given graph :\t"+isBipartiteDFS);
+        System.out.println("Detecting bipartite using BFS in given graph :\t"+isBipartiteDFS);
 
         ArrayList<ArrayList<Integer>> adjDirected = new ArrayList<ArrayList<Integer>>();
         for (int i = 0;i<=5;i++)adjDirected.add(new ArrayList<Integer>());
@@ -266,12 +329,18 @@ public class Graph {
         addEdgeDirected(adjDirected,3,5);
         addEdgeDirected(adjDirected,4,5);
 
-        
+        // System.out.println(adjDirected);
         
         boolean isCycleDirected = isCycleDirected(5,adjDirected);
         System.out.println("Circle in given directed graph :\t"+isCycleDirected);
 
         ArrayList<Integer> topologicalSort = topologicalSort(5,adjDirected);
-        System.out.println("topologicalSort for given directed graph :\t"+topologicalSort);
+        System.out.println("TopologicalSort for given directed graph :\t"+topologicalSort);
+
+        ArrayList<Integer> topologicalSortKahn = topologicalSortKahn(5,adjDirected);
+        System.out.println("TopologicalSort using Kahn's algo:\t"+topologicalSortKahn);
+
+        boolean isCycleKahn = isCycleKahn(5,adjDirected);
+        System.out.println("Cycle detection using Kahn's algo:\t"+isCycleKahn);
     }    
 }
