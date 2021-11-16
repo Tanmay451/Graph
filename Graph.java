@@ -56,6 +56,10 @@ public class Graph {
         adj.get(v).add(u);
     }
 
+    static void addEdgeDirected(ArrayList<ArrayList<Integer> > adj,int u, int v){
+        adj.get(u).add(v);
+    }
+
     static boolean isCycleHelper(int i, boolean vis[], ArrayList<ArrayList<Integer>> adg){
         Queue<Node> q = new LinkedList<>();
         q.add(new Node(i,-1));
@@ -166,6 +170,61 @@ public class Graph {
         }
         return true;
     }
+
+    static boolean isCycleDirectedHelper(int i, boolean vis[], boolean dfsVis[], ArrayList<ArrayList<Integer>> adj){
+        vis[i] = true;
+        dfsVis[i] = true;
+        for(Integer it : adj.get(i)){
+            if (!vis[it]){
+                if (isCycleDirectedHelper(it, vis, dfsVis, adj)){
+                    return true;
+                } 
+            }   else if(dfsVis[it]){
+                    return true;
+            }
+        }
+        dfsVis[i] = false;
+        return false;
+    }
+
+    static boolean isCycleDirected(int V, ArrayList<ArrayList<Integer>> adj){
+        boolean vis[] = new boolean[V+1];
+        boolean dfsVis[] = new boolean[V+1];
+        for (int i = 1; i<= V; i++){
+            if(!vis[i]){
+                if (isCycleDirectedHelper(i,vis,dfsVis,adj)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    static void topologicalSortHelper(int i, boolean vis[], Stack<Integer> st, ArrayList<ArrayList<Integer>> adj){
+        vis[i] = true;
+        for (Integer it : adj.get(i)){
+            if (!vis[it]){
+                topologicalSortHelper(it, vis, st, adj);
+            }
+        }
+        st.push(i);
+    }
+
+    static ArrayList<Integer> topologicalSort(int V, ArrayList<ArrayList<Integer>> adj){
+        Stack<Integer> st = new  Stack<>();
+        boolean vis[] = new boolean[V+1];
+        for (int i = 1; i<=V;i++){
+            if (!vis[i]){
+                topologicalSortHelper(i,vis,st,adj);
+            }
+        }
+
+        ArrayList<Integer> topologicalSort = new ArrayList<Integer>();
+        while(!st.empty()){
+            topologicalSort.add(st.pop());
+        }
+        return topologicalSort;
+    }
     public static void main(String[] args) {
         ArrayList<ArrayList<Integer>> adj = new ArrayList<ArrayList<Integer>>();
         for (int i = 0;i<=7;i++)adj.add(new ArrayList<Integer>());
@@ -198,6 +257,21 @@ public class Graph {
         boolean isBipartiteDFS = isBipartiteDFS(7, adj);
         System.out.println("isBipartiteDFS using BFS in given graph :\t"+isBipartiteDFS);
 
+        ArrayList<ArrayList<Integer>> adjDirected = new ArrayList<ArrayList<Integer>>();
+        for (int i = 0;i<=5;i++)adjDirected.add(new ArrayList<Integer>());
 
+        addEdgeDirected(adjDirected,1,2);
+        addEdgeDirected(adjDirected,2,3);
+        addEdgeDirected(adjDirected,2,4);
+        addEdgeDirected(adjDirected,3,5);
+        addEdgeDirected(adjDirected,4,5);
+
+        
+        
+        boolean isCycleDirected = isCycleDirected(5,adjDirected);
+        System.out.println("Circle in given directed graph :\t"+isCycleDirected);
+
+        ArrayList<Integer> topologicalSort = topologicalSort(5,adjDirected);
+        System.out.println("topologicalSort for given directed graph :\t"+topologicalSort);
     }    
 }
