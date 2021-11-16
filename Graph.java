@@ -288,6 +288,29 @@ public class Graph {
         }
         return true;
     }
+
+    static ArrayList<Integer> shortestPath(int V, ArrayList<ArrayList<Integer>> adj, int source){
+        ArrayList<Integer> distance = new ArrayList<>();
+        for (int i = 0; i<=V; i++){
+            distance.add(10000000);
+        }
+
+        distance.set(source,0);
+        Queue<Integer> q = new LinkedList<>();
+        q.add(source);
+
+        while(!q.isEmpty()){
+            int temp = q.poll();
+            for (Integer it: adj.get(temp)){
+                if (distance.get(it) > distance.get(temp)+1){
+                    distance.set(it, distance.get(temp)+1);
+                    q.add(it);
+                }
+            }
+        }
+
+        return distance;
+    }
     public static void main(String[] args) {
         ArrayList<ArrayList<Integer>> adj = new ArrayList<ArrayList<Integer>>();
         for (int i = 0;i<=7;i++)adj.add(new ArrayList<Integer>());
@@ -319,6 +342,10 @@ public class Graph {
 
         boolean isBipartiteDFS = isBipartiteDFS(7, adj);
         System.out.println("Detecting bipartite using BFS in given graph :\t"+isBipartiteDFS);
+
+        ArrayList<Integer> shortestPath = shortestPath(7,adj,1);
+        System.out.println("ShortestPath using BFS in given graph :\t"+shortestPath);
+
 
         ArrayList<ArrayList<Integer>> adjDirected = new ArrayList<ArrayList<Integer>>();
         for (int i = 0;i<=5;i++)adjDirected.add(new ArrayList<Integer>());
