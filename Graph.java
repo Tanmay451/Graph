@@ -354,7 +354,7 @@ public class Graph {
         }
 
         Stack<Integer> topoSort = topoSort(V,adj);
-        System.out.println("topoSort:\t"+topoSort);
+
         distance.set(0, 0);
 
         while(!topoSort.isEmpty()){
