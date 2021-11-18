@@ -1,4 +1,5 @@
 import java.util.*;
+
 class Node{
     int current, parent;
     public Node(int current, int parent){
@@ -6,6 +7,16 @@ class Node{
         this.parent = parent;
     }
 } 
+
+class Pair{
+    int v;
+    int weight;
+
+    public Pair(int v, int weight){
+        this.v = v;
+        this.weight = weight;
+    }
+}
 public class Graph {
     static ArrayList<Integer> bfs(int V,ArrayList<ArrayList<Integer>> adj){
         ArrayList<Integer> bfs = new ArrayList<Integer>();
@@ -311,6 +322,56 @@ public class Graph {
 
         return distance;
     }
+
+    static void topoSortHelper(int i, boolean vis[], ArrayList<ArrayList<Pair>> adj, Stack<Integer> st){
+        vis[i] = true;
+        for (Pair it : adj.get(i)){
+            if(!vis[it.v]){
+                topoSortHelper(it.v, vis, adj, st);
+            }
+        }
+        st.push(i);
+    }
+    
+    static Stack<Integer> topoSort(int V, ArrayList<ArrayList<Pair>> adj){
+        ArrayList<Integer> sorted = new ArrayList<>();
+        boolean vis[] = new boolean[V];
+
+        Stack<Integer> st = new Stack<>();
+
+        for (int i = 0; i<V; i++){
+            if (!vis[i]){
+                topoSortHelper(i, vis, adj,st);
+            }
+        }
+
+        return st;
+    }
+
+    static ArrayList<Integer> shortedPathWithWeight(int V, ArrayList<ArrayList<Pair>> adj){
+        ArrayList<Integer> distance = new ArrayList<>();
+        for (int i = 0; i< V; i++){
+            distance.add(Integer.MAX_VALUE);
+        }
+
+        Stack<Integer> topoSort = topoSort(V,adj);
+        System.out.println("topoSort:\t"+topoSort);
+        distance.set(0, 0);
+
+        while(!topoSort.isEmpty()){
+            Integer idx = topoSort.pop();
+            if (distance.get(idx) != Integer.MAX_VALUE){
+                for (Pair it : adj.get(idx)){
+                    Integer temp = distance.get(it.v);
+                    if (temp > distance.get(idx)+it.weight){
+                        distance.set(it.v,distance.get(idx)+it.weight);
+                    }
+                }
+            }
+        }
+
+        return distance;
+    }
     public static void main(String[] args) {
         ArrayList<ArrayList<Integer>> adj = new ArrayList<ArrayList<Integer>>();
         for (int i = 0;i<=7;i++)adj.add(new ArrayList<Integer>());
@@ -369,5 +430,20 @@ public class Graph {
 
         boolean isCycleKahn = isCycleKahn(5,adjDirected);
         System.out.println("Cycle detection using Kahn's algo:\t"+isCycleKahn);
+
+        ArrayList<ArrayList<Pair>> adjDirectedWithWeight = new ArrayList<ArrayList<Pair>>();
+        for (int i = 0;i<=5;i++)adjDirectedWithWeight.add(new ArrayList<Pair>());
+
+        adjDirectedWithWeight.get(0).add(new Pair(1,2));
+        adjDirectedWithWeight.get(0).add(new Pair(4,1));
+        adjDirectedWithWeight.get(1).add(new Pair(2,3));
+        adjDirectedWithWeight.get(4).add(new Pair(2,2));
+        adjDirectedWithWeight.get(4).add(new Pair(5,4));
+        adjDirectedWithWeight.get(5).add(new Pair(3,1));
+        adjDirectedWithWeight.get(2).add(new Pair(3,6));
+        
+        ArrayList<Integer> shortedPathWithWeight = shortedPathWithWeight(6,adjDirectedWithWeight);
+        System.out.println("Shorted Path With Weight:\t"+shortedPathWithWeight);
+
     }    
 }
