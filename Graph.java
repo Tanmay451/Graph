@@ -334,7 +334,6 @@ public class Graph {
     }
     
     static Stack<Integer> topoSort(int V, ArrayList<ArrayList<Pair>> adj){
-        ArrayList<Integer> sorted = new ArrayList<>();
         boolean vis[] = new boolean[V];
 
         Stack<Integer> st = new Stack<>();
