@@ -1,4 +1,3 @@
-import java.time.Period;
 import java.util.*;
 
 class Node{
@@ -405,6 +404,43 @@ public class Graph {
         return dis;
     } 
     
+    static ArrayList<Integer> spaningTree(int V, ArrayList<ArrayList<Pair>> adj){
+        ArrayList<Integer> parent = new ArrayList<Integer>();
+        ArrayList<Integer> edge = new ArrayList<Integer>();
+        ArrayList<Boolean> mst = new ArrayList<Boolean>();
+        for (int i = 0; i<V;i++){
+            parent.add(-1);
+            edge.add(Integer.MAX_VALUE);
+            mst.add(false);
+        }
+        
+        edge.set(0, 0);
+
+        for (int i = 0; i<V-1;i++){
+            int tempIdx = 0;
+            int tempMinEdge = Integer.MAX_VALUE;
+
+            for (int j = 0;j<V;j++){
+                if (edge.get(j) < tempMinEdge && !mst.get(j)){
+                    tempIdx = j;
+                    tempMinEdge = edge.get(j);
+                }
+            }
+
+            mst.set(tempIdx, true);
+
+            for (Pair it : adj.get(tempIdx)){
+                if (!mst.get(it.v) && edge.get(it.v) > it.weight){
+                    edge.set(it.v, it.weight);
+                    parent.set(it.v, tempIdx);
+                }
+            }
+
+        }
+
+        return parent;
+    }
+
     public static void main(String[] args) {
         ArrayList<ArrayList<Integer>> adj = new ArrayList<ArrayList<Integer>>();
         for (int i = 0;i<=7;i++)adj.add(new ArrayList<Integer>());
@@ -483,7 +519,11 @@ public class Graph {
         adjWithWeight.get(3).add(new Pair(2,6));
 
         ArrayList<Integer> shortestPathForUndirectedGraph = shortestPathForUndirectedGraph(6,adjWithWeight);
-        System.out.println("shortest path for undirected graph:\t"+shortestPathForUndirectedGraph);
+        System.out.println("Shortest path for undirected graph using dijkstra algo:\t"+shortestPathForUndirectedGraph);
+
+        ArrayList<Integer> spaningTree = spaningTree(6,adjWithWeight);
+        System.out.println("Spaning tree for graph using prims algo:\t"+spaningTree);
+
 
         ArrayList<ArrayList<Pair>> adjDirectedWithWeight = new ArrayList<ArrayList<Pair>>();
         for (int i = 0;i<=5;i++)adjDirectedWithWeight.add(new ArrayList<Pair>());
