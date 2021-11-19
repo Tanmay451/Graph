@@ -1,3 +1,4 @@
+import java.time.Period;
 import java.util.*;
 
 class Node{
@@ -8,13 +9,22 @@ class Node{
     }
 } 
 
-class Pair{
+class Pair implements Comparator<Pair>{
     int v;
     int weight;
 
     public Pair(int v, int weight){
         this.v = v;
         this.weight = weight;
+    }
+
+    Pair(){}
+
+    @Override
+    public int compare(Pair n1, Pair n2){
+        if (n1.v<n2.v) return -1;
+        if (n1.v>n2.v) return 1;
+        return 0;
     }
 }
 public class Graph {
@@ -371,6 +381,30 @@ public class Graph {
 
         return distance;
     }
+
+    static ArrayList<Integer> shortestPathForUndirectedGraph(int V, ArrayList<ArrayList<Pair>> adj){
+        ArrayList<Integer> dis = new ArrayList<Integer>();
+        for (int i = 0;i<V;i++){
+            dis.add(Integer.MAX_VALUE);
+        }
+
+        PriorityQueue<Pair> pq = new PriorityQueue<Pair>(new Pair());
+        pq.add(new Pair(0,0));
+        dis.set(0, 0);
+
+        while(!pq.isEmpty()){
+            Pair idx = pq.poll();
+
+            for (Pair it : adj.get(idx.v)){
+                if (dis.get(it.v) > dis.get(idx.v)+it.weight){
+                    dis.set(it.v, dis.get(idx.v)+it.weight);
+                    pq.add(it);
+                }
+            }
+        }
+        return dis;
+    } 
+    
     public static void main(String[] args) {
         ArrayList<ArrayList<Integer>> adj = new ArrayList<ArrayList<Integer>>();
         for (int i = 0;i<=7;i++)adj.add(new ArrayList<Integer>());
@@ -430,6 +464,27 @@ public class Graph {
         boolean isCycleKahn = isCycleKahn(5,adjDirected);
         System.out.println("Cycle detection using Kahn's algo:\t"+isCycleKahn);
 
+        ArrayList<ArrayList<Pair>> adjWithWeight = new ArrayList<ArrayList<Pair>>();
+        for (int i = 0;i<=5;i++)adjWithWeight.add(new ArrayList<Pair>());
+
+        adjWithWeight.get(0).add(new Pair(1,2));
+        adjWithWeight.get(1).add(new Pair(0,2));
+        adjWithWeight.get(0).add(new Pair(4,1));
+        adjWithWeight.get(4).add(new Pair(0,1));
+        adjWithWeight.get(1).add(new Pair(2,3));
+        adjWithWeight.get(2).add(new Pair(1,3));
+        adjWithWeight.get(4).add(new Pair(2,2));
+        adjWithWeight.get(2).add(new Pair(4,2));
+        adjWithWeight.get(4).add(new Pair(5,4));
+        adjWithWeight.get(5).add(new Pair(4,4));
+        adjWithWeight.get(5).add(new Pair(3,1));
+        adjWithWeight.get(3).add(new Pair(5,1));
+        adjWithWeight.get(2).add(new Pair(3,6));
+        adjWithWeight.get(3).add(new Pair(2,6));
+
+        ArrayList<Integer> shortestPathForUndirectedGraph = shortestPathForUndirectedGraph(6,adjWithWeight);
+        System.out.println("shortest path for undirected graph:\t"+shortestPathForUndirectedGraph);
+
         ArrayList<ArrayList<Pair>> adjDirectedWithWeight = new ArrayList<ArrayList<Pair>>();
         for (int i = 0;i<=5;i++)adjDirectedWithWeight.add(new ArrayList<Pair>());
 
@@ -442,7 +497,7 @@ public class Graph {
         adjDirectedWithWeight.get(2).add(new Pair(3,6));
         
         ArrayList<Integer> shortedPathWithWeight = shortedPathWithWeight(6,adjDirectedWithWeight);
-        System.out.println("Shorted Path With Weight:\t"+shortedPathWithWeight);
+        System.out.println("Shorted path for directed graph with weight:\t"+shortedPathWithWeight);
 
     }    
 }
