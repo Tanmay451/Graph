@@ -6,7 +6,26 @@ class Node{
         this.current = current;
         this.parent = parent;
     }
-} 
+}
+
+class Edge implements Comparator<Edge>{
+    int u,v,w;
+    Edge(int u, int v, int w){
+        this.u = u;
+        this.v = v;
+        this.w = w;
+    }
+    Edge(){}
+    @Override
+    public int compare(Edge e1, Edge e2){
+        if (e1.w < e2.w){
+            return -1;
+        } if (e1.w > e2.w){
+            return 1;
+        } 
+        return 0;
+    }
+}
 
 class Pair implements Comparator<Pair>{
     int v;
@@ -440,6 +459,75 @@ public class Graph {
 
         return parent;
     }
+    static boolean isContain(ArrayList<Edge> eList, Edge e){
+        for (Edge eTemp : eList){
+            if (eTemp.u == e.u && eTemp.v == e.v){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static int findParent(int parent[], int i){
+        if (parent[i] == i){
+            return i;
+        }
+        
+        return parent[i] = findParent(parent, parent[i]);
+    }
+
+    static void union(int parent[], int rank[], int u, int v){
+        int parentU = findParent(parent, u);
+        int parentV = findParent(parent, v);
+
+        if (rank[parentU] > rank[parentV]){
+            parent[parentV] = parentU;
+        } else if (rank[parentV] > rank[parentU]){
+            parent[parentU] = parentV;
+        } else {
+            parent[parentV] = parentU;
+            rank[parentU]++;
+        }
+    }
+    static ArrayList<ArrayList<Integer>> spaningTreeUsingKruskal(int V, ArrayList<ArrayList<Pair>> adj){
+        ArrayList<ArrayList<Integer>> parent = new ArrayList<ArrayList<Integer>>();
+        
+        int rank[] = new int[V];
+        int par[] = new int[V];
+
+        for (int i = 0; i< V; i++){
+            rank[i] = 0;
+            par[i] = i;
+        }
+
+        ArrayList<Edge> e = new ArrayList<>();
+
+        for (int i = 0; i<V;i++){
+            for (Pair p : adj.get(i)){
+                boolean isContain = isContain(e,new Edge(p.v,i, p.weight));
+                if (!isContain){    
+                    e.add(new Edge(i, p.v, p.weight));
+                }
+            }
+        }
+        
+        Collections.sort(e,new Edge());
+        for (Edge tempE : e){
+            int parentU = findParent(par, tempE.u);
+            int parentV = findParent(par, tempE.v);
+            if (parentU != parentV){
+                union(par, rank, tempE.u, tempE.v);
+                ArrayList<Integer> temp = new ArrayList<>();
+                temp.add(tempE.u);
+                temp.add(tempE.v);
+                parent.add(temp);
+            }
+        }
+
+
+
+        return parent;
+    }
 
     public static void main(String[] args) {
         ArrayList<ArrayList<Integer>> adj = new ArrayList<ArrayList<Integer>>();
@@ -524,6 +612,10 @@ public class Graph {
         ArrayList<Integer> spaningTree = spaningTree(6,adjWithWeight);
         System.out.println("Spaning tree for graph using prims algo:\t"+spaningTree);
 
+        ArrayList<ArrayList<Integer>> spaningTreeUsingKruskal = spaningTreeUsingKruskal(6,adjWithWeight);
+        System.out.println("Spaning tree for graph using kruskal algo:\t"+spaningTreeUsingKruskal);
+
+        
 
         ArrayList<ArrayList<Pair>> adjDirectedWithWeight = new ArrayList<ArrayList<Pair>>();
         for (int i = 0;i<=5;i++)adjDirectedWithWeight.add(new ArrayList<Pair>());
