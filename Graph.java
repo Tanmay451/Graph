@@ -538,7 +538,7 @@ public class Graph {
             if (!vis[it]){
                 dfsToCheckBridges(it, node, adj, dis, low, vis, time, bridge);
                 low[node] = Math.min(low[node], low[it]);
-                if (low[it] > low[node]){
+                if (low[it] > dis[node]){
                     ArrayList<Integer> temp = new ArrayList<>();
                     temp.add(node);
                     temp.add(it);
@@ -568,6 +568,44 @@ public class Graph {
         }
         return bridge;
     } 
+
+    static void dfsToCheckArticulationPoint(int node,int parent,ArrayList<ArrayList<Integer>> adj, int dis[], int low[], boolean vis[], int time, boolean articulationPoint[]){
+        vis[node] = true;
+        dis[node] = low[node] = time;
+        time++;
+        for (Integer it : adj.get(node)){
+            if (it == parent) continue;
+            if (!vis[it]){
+                dfsToCheckArticulationPoint(it, node, adj, dis, low, vis, time, articulationPoint);
+                low[node] = Math.min(low[node], low[it]);
+                if (low[it] >= dis[node] && parent != -1){
+                    articulationPoint[node] = true;
+                } 
+            }else{
+                low[node] = Math.min(low[node], low[it]);
+            }
+        }
+    }
+
+    static boolean[] GraphArticulation(int V, ArrayList<ArrayList<Integer>> adj){
+        boolean articulationPoint[] = new boolean[V];
+        boolean vis[] = new boolean[V];
+        int dis[] = new int[V];
+        int low[] = new int[V];
+
+        for (int i = 0; i<V;i++){
+            vis[i] = articulationPoint[i] = false;
+            dis[i] = low[i] = -1;
+        }
+
+        for (int i = 0; i<V;i++){
+            if (!vis[i]){
+                dfsToCheckArticulationPoint(i,-1,adj,dis,low,vis,0,articulationPoint);
+            }
+        }
+        return articulationPoint;
+    } 
+
 
     public static void main(String[] args) {
         ArrayList<ArrayList<Integer>> adj = new ArrayList<ArrayList<Integer>>();
@@ -707,13 +745,10 @@ public class Graph {
         a.get(11).add(9);
 		a.get(11).add(11);
 
-
-
-
-
-
-
         ArrayList<ArrayList<Integer>> GraphBridges = GraphBridges(12,a);
         System.out.println("Bridges in graph are:\t"+GraphBridges);
+
+        boolean GraphArticulation[] = GraphArticulation(12,a);
+        System.out.println("Articulation point in graph are:\t"+Arrays.toString(GraphArticulation));
     }    
 }
