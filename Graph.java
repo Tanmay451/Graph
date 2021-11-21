@@ -529,6 +529,46 @@ public class Graph {
         return parent;
     }
 
+    static void dfsToCheckBridges(int node,int parent,ArrayList<ArrayList<Integer>> adj, int dis[], int low[], boolean vis[], int time, ArrayList<ArrayList<Integer>> bridge){
+        vis[node] = true;
+        dis[node] = low[node] = time;
+        time++;
+        for (Integer it : adj.get(node)){
+            if (it == parent) continue;
+            if (!vis[it]){
+                dfsToCheckBridges(it, node, adj, dis, low, vis, time, bridge);
+                low[node] = Math.min(low[node], low[it]);
+                if (low[it] > low[node]){
+                    ArrayList<Integer> temp = new ArrayList<>();
+                    temp.add(node);
+                    temp.add(it);
+                    bridge.add(temp);
+                } 
+            }else{
+                low[node] = Math.min(low[node], low[it]);
+            }
+        }
+    }
+
+    static ArrayList<ArrayList<Integer>> GraphBridges(int V, ArrayList<ArrayList<Integer>> adj){
+        ArrayList<ArrayList<Integer>> bridge = new ArrayList<ArrayList<Integer>>();
+        boolean vis[] = new boolean[V];
+        int dis[] = new int[V];
+        int low[] = new int[V];
+
+        for (int i = 0; i<V;i++){
+            vis[i] = false;
+            dis[i] = low[i] = -1;
+        }
+
+        for (int i = 0; i<V;i++){
+            if (!vis[i]){
+                dfsToCheckBridges(i,-1,adj,dis,low,vis,0,bridge);
+            }
+        }
+        return bridge;
+    } 
+
     public static void main(String[] args) {
         ArrayList<ArrayList<Integer>> adj = new ArrayList<ArrayList<Integer>>();
         for (int i = 0;i<=7;i++)adj.add(new ArrayList<Integer>());
@@ -631,5 +671,49 @@ public class Graph {
         ArrayList<Integer> shortedPathWithWeight = shortedPathWithWeight(6,adjDirectedWithWeight);
         System.out.println("Shorted path for directed graph with weight:\t"+shortedPathWithWeight);
 
+
+        int n = 12;
+        ArrayList<ArrayList<Integer> > a = new ArrayList<ArrayList<Integer> >();
+		
+		for (int i = 0; i < n; i++) 
+			a.add(new ArrayList<Integer>());
+			
+		a.get(0).add(1);
+		a.get(0).add(3);
+        a.get(1).add(0);
+        a.get(1).add(2);
+		a.get(2).add(1);
+		a.get(2).add(3);
+		a.get(3).add(0);
+		a.get(3).add(2);
+		a.get(3).add(4);
+		a.get(4).add(3);
+		a.get(4).add(5);
+		a.get(5).add(4);
+		a.get(5).add(6);
+		a.get(5).add(8);
+		a.get(6).add(5);
+		a.get(6).add(7);
+		a.get(7).add(6);
+		a.get(7).add(8);
+		a.get(7).add(9);
+        a.get(8).add(5);
+		a.get(8).add(7);
+		a.get(9).add(7);
+		a.get(9).add(10);
+		a.get(9).add(11);
+        a.get(10).add(9);
+		a.get(10).add(11);
+        a.get(11).add(9);
+		a.get(11).add(11);
+
+
+
+
+
+
+
+        ArrayList<ArrayList<Integer>> GraphBridges = GraphBridges(12,a);
+        System.out.println("Bridges in graph are:\t"+GraphBridges);
     }    
 }
